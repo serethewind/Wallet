@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WalletApi.Data;
+using WalletApi.Repositories;
+using WalletApi.Repositories.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,9 @@ builder.Services.AddSwaggerGen();
 //using di to inject the dbContext into the application
 builder.Services.AddDbContext<WalletDbContext>(options => 
 options.UseSqlServer(builder.Configuration.GetConnectionString("WalletConnectionString")));
+
+//using di to inject the repository interface and the implementation into the context
+builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 
 var app = builder.Build();
 

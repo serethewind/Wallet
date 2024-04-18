@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WalletApi.Data;
 using WalletApi.Models.Domains;
 using WalletApi.Models.DTO;
+using WalletApi.Repositories;
 
 namespace WalletApi.Controllers
 {
@@ -10,17 +12,19 @@ namespace WalletApi.Controllers
     [ApiController]
     public class RegionController : ControllerBase
     {
+        private readonly IRegionRepository _regionRepository;
 
         private readonly WalletDbContext walletDbContext;
 
-        public RegionController(WalletDbContext walletDbContext)
+        public RegionController(WalletDbContext walletDbContext, IRegionRepository _regionRepository)
         {
             this.walletDbContext = walletDbContext;
+            this._regionRepository = _regionRepository;
         }
 
         [HttpPost]
         //actionMethods
-        public IActionResult CreateRegion([FromBody] RegionRequestDto regionRequestDto)
+        public async Task<IActionResult> CreateRegion([FromBody] RegionRequestDto regionRequestDto)
         {
             //the dto in the format the data is received is converted to an instance of RegionModel stored in the DbContext
             //The object is saved in the db.
@@ -32,8 +36,8 @@ namespace WalletApi.Controllers
                 Name = regionRequestDto.Name,
                 RegionImageUrl = regionRequestDto.RegionImageUrl
             };
-            walletDbContext.Regions.Add(regionModel);
-            walletDbContext.SaveChanges();
+            await walletDbContext.Regions.AddAsync(regionModel);
+           await walletDbContext.SaveChangesAsync();
 
 
             var regionModelToBeReturned = new RegionDto
@@ -51,7 +55,7 @@ namespace WalletApi.Controllers
 
         // localhost:portnumber/api/Region
         [HttpGet]
-        public IActionResult GetRegions()
+        public async Task<IActionResult> GetRegions()
         {
             /* var regions = new List<Region>
              {
@@ -72,8 +76,15 @@ namespace WalletApi.Controllers
              };
             */
 
-           
-            var regions = walletDbContext.Regions.ToList().Select((x) => new RegionDto
+            var regions = await walletDbContext.Regions.ToListAsync();
+            var regionDtos = regions.Select(x => new RegionDto
+            {
+                Id = x.Id,
+                Code = x.Code,
+                RegionImageUrl = x.RegionImageUrl,
+                Name = x.Name
+            }).ToList();
+        /*    var regions = await walletDbContext.Regions.ToListAsync().Select((x) => new RegionDto
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -81,18 +92,18 @@ namespace WalletApi.Controllers
                 Name = x.Name
             }
             ).ToList();
-
+        */
           
             return Ok(regions);
         }
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetRegionById([FromRoute] Guid id)
+        public async Task<IActionResult> GetRegionById([FromRoute] Guid id)
         {
             //  var region = walletDbContext.Regions.Find(id);
             //  var region = walletDbContext.Regions.FirstOrDefault(x => x.Id == id);
-            var regionDto = walletDbContext.Regions
+            var regionDto = await walletDbContext.Regions
                 .Where(x => x.Id == id)
                 .Select(x => new RegionDto
                 {
@@ -101,7 +112,7 @@ namespace WalletApi.Controllers
                     Name = x.Name,
                     RegionImageUrl = x.RegionImageUrl
                 }
-                ).FirstOrDefault();
+                ).FirstOrDefaultAsync();
              
             if (regionDto == null)
             {
@@ -113,9 +124,9 @@ namespace WalletApi.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult UpdateRegionById([FromRoute] Guid id, [FromBody] RegionRequestDto regionRequestDto)
+        public async Task<IActionResult> UpdateRegionById([FromRoute] Guid id, [FromBody] RegionRequestDto regionRequestDto)
         {
-            var region = walletDbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var region =  await walletDbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (region == null)
             {
                 return NotFound();
@@ -125,8 +136,7 @@ namespace WalletApi.Controllers
             region.RegionImageUrl = regionRequestDto.RegionImageUrl;
 
             // walletDbContext.Regions.Update(region);
-            walletDbContext.SaveChanges();
-
+            await walletDbContext.SaveChangesAsync();
             RegionDto regionToBeReturned = new RegionDto
             {
                 Id = region.Id,
@@ -140,16 +150,16 @@ namespace WalletApi.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
-        public IActionResult DeleteRegionById([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteRegionById([FromRoute] Guid id)
         {
 
-          var region =  walletDbContext.Regions.Find(id);
+          var region =  await walletDbContext.Regions.FindAsync(id);
             if (region == null)
             {
                 return NotFound();
             }
             walletDbContext.Regions.Remove(region);
-            walletDbContext.SaveChanges();
+            await walletDbContext.SaveChangesAsync();
             return Ok();
         }
     }
