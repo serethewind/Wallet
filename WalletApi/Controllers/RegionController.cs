@@ -29,16 +29,12 @@ namespace WalletApi.Controllers
             //the dto in the format the data is received is converted to an instance of RegionModel stored in the DbContext
             //The object is saved in the db.
             //It is then returned as a model. The method to look out for is the CreatedAtAction();
-            var regionModel = new Region
-            {
-                Id = Guid.NewGuid(),
-                Code = regionRequestDto.Code,
-                Name = regionRequestDto.Name,
-                RegionImageUrl = regionRequestDto.RegionImageUrl
-            };
-            await walletDbContext.Regions.AddAsync(regionModel);
-           await walletDbContext.SaveChangesAsync();
+            var regionModel = await _regionRepository.CreateRegion(regionRequestDto);
 
+            if (regionModel is null)
+            {
+                return BadRequest();
+            }
 
             var regionModelToBeReturned = new RegionDto
             {
@@ -76,7 +72,7 @@ namespace WalletApi.Controllers
              };
             */
 
-            var regions = await walletDbContext.Regions.ToListAsync();
+            var regions = await _regionRepository.GetAllAsync();
             var regionDtos = regions.Select(x => new RegionDto
             {
                 Id = x.Id,
@@ -103,16 +99,7 @@ namespace WalletApi.Controllers
         {
             //  var region = walletDbContext.Regions.Find(id);
             //  var region = walletDbContext.Regions.FirstOrDefault(x => x.Id == id);
-            var regionDto = await walletDbContext.Regions
-                .Where(x => x.Id == id)
-                .Select(x => new RegionDto
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    Name = x.Name,
-                    RegionImageUrl = x.RegionImageUrl
-                }
-                ).FirstOrDefaultAsync();
+            var regionDto = await _regionRepository.GetRegionById(id);
              
             if (regionDto == null)
             {
@@ -124,19 +111,15 @@ namespace WalletApi.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateRegionById([FromRoute] Guid id, [FromBody] RegionRequestDto regionRequestDto)
+        public async Task<IActionResult> UpdateRegionById([FromRoute] Guid id, [FromBody] RegionUpdateRequestDto regionUpdateRequestDto)
         {
-            var region =  await walletDbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            // var region =  await walletDbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            var region = await _regionRepository.UpdateRegionById(id, regionUpdateRequestDto);
             if (region == null)
             {
                 return NotFound();
             }
-            region.Code = regionRequestDto.Code;
-            region.Name = regionRequestDto.Name;
-            region.RegionImageUrl = regionRequestDto.RegionImageUrl;
-
-            // walletDbContext.Regions.Update(region);
-            await walletDbContext.SaveChangesAsync();
+           
             RegionDto regionToBeReturned = new RegionDto
             {
                 Id = region.Id,
@@ -153,7 +136,7 @@ namespace WalletApi.Controllers
         public async Task<IActionResult> DeleteRegionById([FromRoute] Guid id)
         {
 
-          var region =  await walletDbContext.Regions.FindAsync(id);
+            var region = await _regionRepository.DeleteRegionById(id);
             if (region == null)
             {
                 return NotFound();

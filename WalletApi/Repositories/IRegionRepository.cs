@@ -1,4 +1,5 @@
 ﻿using WalletApi.Models.Domains;
+using WalletApi.Models.DTO;
 
 namespace WalletApi.Repositories
 {
@@ -6,10 +7,12 @@ namespace WalletApi.Repositories
     {
         Task<List<Region>> GetAllAsync();
 
-        Task<Region> GetRegionById();
+        Task<Region?> GetRegionById(Guid id);
 
-        Task<Region> CreateRegion();
+        Task<Region> CreateRegion(RegionRequestDto regionRequestDto);
 
-        Task<Region> 
+        Task<Region?> UpdateRegionById(Guid id, RegionUpdateRequestDto region);
+
+        Task<Region?> DeleteRegionById(Guid id);
     }
 }

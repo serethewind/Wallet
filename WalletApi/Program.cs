@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WalletApi.Data;
+using WalletApi.Mappings;
 using WalletApi.Repositories;
 using WalletApi.Repositories.Implementations;
 
@@ -18,6 +19,9 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("WalletConnection
 
 //using di to inject the repository interface and the implementation into the context
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+
+//using di to inject the AutoMapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 
