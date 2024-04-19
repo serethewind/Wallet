@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using WalletApi.Controllers.CustomActionFilters;
 using WalletApi.Models.DTO;
 using WalletApi.Repositories;
@@ -20,11 +22,14 @@ namespace WalletApi.Controllers
             this._walkRepository = _walkRepository;
         }
 
-        
+
         [HttpGet]
-        public async Task<IActionResult> GetAllWalks()
+        public async Task<IActionResult> GetAllWalks(
+            [FromQuery] string? filterOn, [FromQuery] string? filterQuery,
+            [FromQuery] string? sortBy = null, [FromQuery] bool isAscending = true,
+            [FromQuery][Range(1, int.MaxValue, ErrorMessage ="Value should not be less than 1")] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-           var walkModels = await _walkRepository.GetWalksAsync();
+           var walkModels = await _walkRepository.GetWalksAsync(filterOn,filterQuery, sortBy, isAscending, pageNumber, pageSize);
            return Ok(_iMapper.Map <List<WalkDto>>(walkModels));
         }
 
