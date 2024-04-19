@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using WalletApi.Data;
 using WalletApi.Models.Domains;
 using WalletApi.Models.DTO;
@@ -11,21 +12,24 @@ namespace WalletApi.Repositories.Implementations
         //dependency injection of the dbwalkcontext
 
         private readonly WalletDbContext walletDbContext;
+        private readonly IMapper _iMapper;
 
-        public RegionRepository(WalletDbContext walletDbContext)
+        public RegionRepository(WalletDbContext walletDbContext, IMapper _iMapper)
         {
             this.walletDbContext = walletDbContext;
+            this._iMapper = _iMapper;
         }
 
         public async Task<Region> CreateRegion(RegionRequestDto regionRequestDto)
         {
-            var region = new Region
-            {
-                Id = Guid.NewGuid(),
-                Name = regionRequestDto.Name,
-                Code = regionRequestDto.Code,
-                RegionImageUrl = regionRequestDto.RegionImageUrl
-            };
+            //var region = new Region
+            //{
+            //    Id = Guid.NewGuid(),
+            //    Name = regionRequestDto.Name,
+            //    Code = regionRequestDto.Code,
+            //    RegionImageUrl = regionRequestDto.RegionImageUrl
+            //};
+            var region = _iMapper.Map<Region>(regionRequestDto);
 
             await walletDbContext.Regions.AddAsync(region);
             await walletDbContext.SaveChangesAsync();

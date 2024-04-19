@@ -19,6 +19,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("WalletConnection
 
 //using di to inject the repository interface and the implementation into the context
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+builder.Services.AddScoped<IWalkRepository, WalkRepository>();
 
 //using di to inject the AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));

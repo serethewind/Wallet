@@ -8,10 +8,13 @@ namespace WalletApi.Mappings
     {
         public AutoMapperProfiles()
         {
-            CreateMap<RegionDto, Region>()              
-                .ReverseMap();
-            CreateMap<RegionRequestDto, Region>();
-            CreateMap<RegionUpdateRequestDto, Region>();
+            CreateMap<RegionDto, Region>().ReverseMap();
+            CreateMap<RegionRequestDto, Region>().ReverseMap();
+            CreateMap<RegionUpdateRequestDto, Region>().ReverseMap();
+
+            CreateMap<WalkRequestDto, Walk>();
+            CreateMap<WalkUpdateRequestDto, Walk>();
+            CreateMap<WalkDto, Walk>().ReverseMap();
         }
     }
 }

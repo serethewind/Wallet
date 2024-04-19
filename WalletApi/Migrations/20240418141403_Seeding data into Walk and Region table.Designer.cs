@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WalletApi.Data;
 
@@ -11,9 +12,11 @@ using WalletApi.Data;
 namespace WalletApi.Migrations
 {
     [DbContext(typeof(WalletDbContext))]
-    partial class WalletDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240418141403_Seeding data into Walk and Region table")]
+    partial class SeedingdataintoWalkandRegiontable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,44 +135,6 @@ namespace WalletApi.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("Walks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("1f99db48-e3d6-4146-82d0-8e7de5369e09"),
-                            Description = "A walk at the city center",
-                            DifficultyId = new Guid("4e080aec-ddba-42c2-bc25-a4da2c72c705"),
-                            LengthInKm = 5.0,
-                            Name = "Ring road walk",
-                            RegionId = new Guid("00000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("2ab992ae-22af-43e4-acfd-294a346e1ef3"),
-                            Description = "Take a visit to the largest carnival",
-                            DifficultyId = new Guid("4e080aec-ddba-42c2-bc25-a4da2c72c705"),
-                            LengthInKm = 15.0,
-                            Name = "Visit Calabar Festival",
-                            RegionId = new Guid("1d5716e5-fbcb-4210-8b02-b74e6926d13c")
-                        },
-                        new
-                        {
-                            Id = new Guid("9bc757d4-52dd-4496-9f93-dc5929ae2d18"),
-                            Description = "Study in the south and north of Kaduna",
-                            DifficultyId = new Guid("7c2cc3dd-c3af-473f-9c63-8ecc72bbabc7"),
-                            LengthInKm = 20.0,
-                            Name = "Kaduna Education Institute",
-                            RegionId = new Guid("d8d64eda-f5e9-45cb-8d5a-3c96f991afcb")
-                        },
-                        new
-                        {
-                            Id = new Guid("b3537d64-47e3-4916-b92e-8fa3722c3572"),
-                            Description = "Take a visit to the largest carnival",
-                            DifficultyId = new Guid("4e080aec-ddba-42c2-bc25-a4da2c72c705"),
-                            LengthInKm = 15.0,
-                            Name = "Kano Commerce Center",
-                            RegionId = new Guid("ff756d93-71fd-4acc-a6d3-d5f5023cd25f")
-                        });
                 });
 
             modelBuilder.Entity("WalletApi.Models.Domains.Walk", b =>
